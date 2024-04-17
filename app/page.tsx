@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import TodoList from "./components/ToDoList";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -24,24 +25,16 @@ export default function Home() {
 
   return (
     <div className="container mx-auto">
-      {session ? (
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter a new todo"
-          />
-          <Button type="submit">Create Todo</Button>
-        </form>
-      ) : (
-        <div>
-          <p>Please sign in to create todos.</p>
-          <Button onClick={() => router.push("/api/auth/signin")}>
-            Sign In
-          </Button>
-        </div>
-      )}
+      <form onSubmit={handleSubmit}>
+        <Input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Enter a new todo"
+        />
+        <Button type="submit">Create Todo</Button>
+      </form>
+      <TodoList />
     </div>
   );
 }

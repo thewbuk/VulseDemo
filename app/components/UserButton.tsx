@@ -46,7 +46,7 @@ export function UserButton({ session }: { session: Session | null }) {
     return (
       <>
         <div
-          className="rounded-md mx-auto bg-gradient-to-r p-[2px] from-[#6EE7B7] via-[#3B82F6]
+          className="rounded-md bg-gradient-to-r p-[2px] from-[#6EE7B7] via-[#3B82F6]
             to-[#9333EA]"
         >
           <Button variant={"outline"} className="border-sky-500 rounded-md">

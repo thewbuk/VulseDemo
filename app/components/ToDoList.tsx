@@ -1,8 +1,7 @@
-"use client";
-import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Todo {
   id: string;
@@ -10,8 +9,7 @@ interface Todo {
   completed: boolean;
 }
 
-export default function Todos() {
-  const { data: session } = useSession();
+export default function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
 
   useEffect(() => {
@@ -40,13 +38,12 @@ export default function Todos() {
     await fetch(`/api/todos/${id}`, {
       method: "DELETE",
     });
-    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
   };
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Todo List</h1>
-      {session ? (
+    <Card>
+      <CardContent>
+        <h2 className="text-2xl font-bold mb-4">Todo List</h2>
         <ul>
           {todos.map((todo) => (
             <li key={todo.id} className="flex items-center mb-2">
@@ -68,9 +65,7 @@ export default function Todos() {
             </li>
           ))}
         </ul>
-      ) : (
-        <p>Please sign in to view your todos.</p>
-      )}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

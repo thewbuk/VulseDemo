@@ -7,23 +7,19 @@ const todoSchema = z.object({
   completed: z.boolean().optional(),
 });
 
-export async function GET(request: Request) {
-  const todos = await prisma.todo.findMany();
-  return NextResponse.json(todos);
-}
-
-export async function POST(request: Request) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
+    const { id } = params;
     const json = await request.json();
-    const { title } = todoSchema.parse(json);
-    const todo = await prisma.todo.create({
-      data: {
-        title,
-        completed: false,
-        userId: "1",
-      },
+    const { completed } = todoSchema.parse(json);
+    const todo = await prisma.todo.update({
+      where: { id },
+      data: { completed },
     });
-    return NextResponse.json(todo, { status: 201 });
+    return NextResponse.json(todo);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.issues }, { status: 400 });
@@ -34,4 +30,15 @@ export async function POST(request: Request) {
       );
     }
   }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const { id } = params;
+  await prisma.todo.delete({
+    where: { id },
+  });
+  return new NextResponse(null, { status: 204 });
 }
