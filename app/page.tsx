@@ -24,7 +24,6 @@ export default function Home() {
 
   return (
     <div className="container mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Welcome to the Todo App</h1>
       {session ? (
         <form onSubmit={handleSubmit}>
           <Input
