@@ -31,6 +31,7 @@ export default function LoginForm() {
               type="email"
               placeholder="m@example.com"
               required
+              disabled
             />
           </div>
           <div className="grid gap-2">
@@ -40,9 +41,9 @@ export default function LoginForm() {
                 Forgot your password?
               </Link>
             </div>
-            <Input id="password" type="password" required />
+            <Input id="password" type="password" required disabled />
           </div>
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled>
             Login
           </Button>
           <Button
