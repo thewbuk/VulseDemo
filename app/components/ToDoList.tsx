@@ -6,6 +6,18 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
 import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface Todo {
   id: string;
@@ -13,16 +25,28 @@ interface Todo {
   completed: boolean;
 }
 
+const formSchema = z.object({
+  title: z.string().min(1, {
+    message: "Title is required.",
+  }),
+});
+
 export default function TodoList() {
   const { todos, isLoading, addTodo, updateTodo, deleteTodo } = useTodos();
   const { data: session } = useSession();
-  const [title, setTitle] = useState("");
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+    },
+  });
+
   const userId = "1";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await addTodo(title, userId);
-    setTitle("");
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await addTodo(values.title, userId);
+    form.reset();
   };
 
   if (isLoading) {
@@ -31,18 +55,29 @@ export default function TodoList() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <Input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter a new todo"
-        />
-        <Button type="submit">Create Todo</Button>
-      </form>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mb-4">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter a new todo" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="hover:scale-105 transition">
+            Create Todo
+          </Button>
+        </form>
+      </Form>
       <Card>
         <CardContent>
-          <h2 className="text-2xl font-bold mb-4">Todo List</h2>
+          <h2 className="text-2xl font-bold mb-4 mt-4">Todo List</h2>
           <ul>
             {todos.map((todo) => (
               <li key={todo.id} className="flex items-center mb-2">
@@ -58,7 +93,7 @@ export default function TodoList() {
                 <Button
                   variant="destructive"
                   size="sm"
-                  className="ml-auto"
+                  className="ml-auto hover:scale-105 transition"
                   onClick={() => deleteTodo(todo.id)}
                 >
                   Delete
@@ -89,13 +124,25 @@ function useTodos() {
   };
 
   const addTodo = async (title: string, userId: string) => {
+    const newTodo: Todo = {
+      id: Date.now().toString(),
+      title,
+      completed: false,
+    };
+
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
+
     const res = await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, userId }),
     });
-    if (res.ok) {
-      await fetchTodos();
+
+    if (!res.ok) {
+      // If the request fails, remove the optimistically added todo
+      setTodos((prevTodos) =>
+        prevTodos.filter((todo) => todo.id !== newTodo.id)
+      );
     }
   };
 
