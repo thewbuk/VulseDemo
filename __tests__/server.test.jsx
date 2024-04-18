@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { app } from "./../app/api/server";
+import { app } from "../app/api/server";
 
 describe("Todo API", () => {
   it("should create a new todo", async () => {
