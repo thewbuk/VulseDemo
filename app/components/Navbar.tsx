@@ -15,7 +15,7 @@ async function Navbar() {
 
   // const session = await getServerSession(authOptions);
   return (
-    <header className="relative top-0 z-50">
+    <header className="relative top-0 z-50 mx-12">
       <nav className="flex flex-col items-center h-24 p-5 pl-2 mx-auto bg-transparent sm:flex-row">
         <Link href="/">
           <ListTodo />
