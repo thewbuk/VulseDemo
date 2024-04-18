@@ -1,3 +1,4 @@
+// File: app/page.tsx
 "use client";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
@@ -10,16 +11,21 @@ export default function Home() {
   const { data: session } = useSession();
   const [title, setTitle] = useState("");
   const router = useRouter();
+  const userId = "1";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/todos", {
+    const response = await fetch("/api/todos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title }),
+      body: JSON.stringify({ title, userId }),
     });
-    if (res.ok) {
-      router.push("/todos");
+    if (response.ok) {
+      setTitle("");
+      router.refresh();
+    } else {
+      const errorData = await response.json();
+      console.error("Failed to create todo:", errorData.error);
     }
   };
 

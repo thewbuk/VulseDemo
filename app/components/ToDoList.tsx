@@ -21,6 +21,13 @@ export default function TodoList() {
     fetchTodos();
   }, []);
 
+  const handleDelete = async (id: string) => {
+    await fetch(`/api/todos/${id}`, {
+      method: "DELETE",
+    });
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
+  };
+
   const handleComplete = async (id: string) => {
     await fetch(`/api/todos/${id}`, {
       method: "PATCH",
@@ -34,12 +41,6 @@ export default function TodoList() {
     );
   };
 
-  const handleDelete = async (id: string) => {
-    await fetch(`/api/todos/${id}`, {
-      method: "DELETE",
-    });
-  };
-
   return (
     <Card>
       <CardContent>
@@ -49,7 +50,7 @@ export default function TodoList() {
             <li key={todo.id} className="flex items-center mb-2">
               <Checkbox
                 checked={todo.completed}
-                onCheckedChange={() => handleComplete(todo.id)}
+                onChange={() => handleComplete(todo.id)}
               />
               <span className={`ml-2 ${todo.completed ? "line-through" : ""}`}>
                 {todo.title}

@@ -1,28 +1,20 @@
+//api/addTodo/[id]/route.ts
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  const res = await fetch("http://localhost:4000/todos", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  const data = await res.json();
-  return NextResponse.json(data);
-}
-
-export async function POST(request: Request) {
+export async function POST(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
     const json = await request.json();
-    const { title, userId } = json;
+    const userId = params.id;
 
-    const res = await fetch("http://localhost:4000/todos", {
+    const res = await fetch(`http://localhost:4000/todos/${userId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ title, userId }),
+      body: JSON.stringify(json),
     });
 
     if (!res.ok) {
