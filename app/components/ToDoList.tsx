@@ -32,7 +32,14 @@ const formSchema = z.object({
 });
 
 export default function TodoList() {
-  const { todos, isLoading, addTodo, updateTodo, deleteTodo } = useTodos();
+  const {
+    todos,
+    isLoading,
+    addTodo,
+    updateTodo,
+    deleteTodo,
+    handleDeleteList,
+  } = useTodos();
   const { data: session } = useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,7 +69,13 @@ export default function TodoList() {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Title</FormLabel>
+                <div className="mt-4 space-x-4">
+                  <FormLabel>Title</FormLabel>
+
+                  <Button variant="destructive" onClick={handleDeleteList}>
+                    Remove List
+                  </Button>
+                </div>
                 <FormControl>
                   <Input placeholder="Enter a new todo" {...field} />
                 </FormControl>
@@ -166,5 +179,19 @@ function useTodos() {
     }
   };
 
-  return { todos, isLoading, addTodo, updateTodo, deleteTodo };
+  const handleDeleteList = async () => {
+    await fetch("/api/todos/delete-all", {
+      method: "DELETE",
+    });
+    setTodos([]);
+  };
+
+  return {
+    todos,
+    isLoading,
+    addTodo,
+    updateTodo,
+    deleteTodo,
+    handleDeleteList,
+  };
 }
